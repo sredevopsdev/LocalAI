@@ -111,6 +111,8 @@ github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230619183453-2b6cc9
 github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230619183453-2b6cc99a31a1/go.mod h1:4T3CHXyrt+7FQHXaxULZfPjHbD8/99WuDDJa0YVZARI=
 github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230622072915-01acb8d2506e h1:kJgspevvIh1rKAQZw1g5inEYLToV/kSR7k64Wzdp7Uw=
 github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230622072915-01acb8d2506e/go.mod h1:4T3CHXyrt+7FQHXaxULZfPjHbD8/99WuDDJa0YVZARI=
+github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230622161949-a4230754039f h1:Qty0R2ROu4BV1+iks+lW+AX/8RbnLX2ROs7QcV2gtuA=
+github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230622161949-a4230754039f/go.mod h1:4T3CHXyrt+7FQHXaxULZfPjHbD8/99WuDDJa0YVZARI=
 github.com/onsi/ginkgo/v2 v2.10.0 h1:sfUl4qgLdvkChZrWCYndY2EAu9BRIw1YphNAzy1VNWs=
 github.com/onsi/ginkgo/v2 v2.10.0/go.mod h1:UDQOh5wbQUlMnkLfVaIUMtQ1Vus92oM+P2JX1aulgcE=
 github.com/onsi/ginkgo/v2 v2.11.0 h1:WgqUCUt/lT6yXoQ8Wef0fsNn5cAuMK7+KT9UFRz2tcU=
