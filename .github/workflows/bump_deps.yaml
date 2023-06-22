@@ -39,7 +39,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.UPDATE_BOT_TOKEN }}
+          token: ${{ secrets.GHCR_PASS }}
           push-to-fork: ci-forks/LocalAI
           commit-message: ':arrow_up: Update ${{ matrix.repository }}'
           title: ':arrow_up: Update ${{ matrix.repository }}'
