@@ -110,14 +110,10 @@ service:
   # If using an AWS load balancer, you'll need to override the default 60s load balancer idle timeout
   # service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "1200"
 
-nodeSelector: 
-  node-role.kubernetes.io/worker: ""
+nodeSelector:  {}
 
 
-tolerations: 
-  - key: node-role.kubernetes.io/master
-    operator: Exists
-    effect: NoSchedule
+tolerations:  []
 
 
 affinity: {}
