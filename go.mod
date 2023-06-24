@@ -1,4 +1,4 @@
-module github.com/go-skynet/LocalAI
+module github.com/sredevopsdev/LocalAI
 
 go 1.19
 
