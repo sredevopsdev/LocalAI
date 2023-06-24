@@ -14,7 +14,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/imdario/mergo v0.3.16
+	github.com/imdario/mergo v1.0.0
 	github.com/mudler/go-stable-diffusion v0.0.0-20230605122230-d89260f598af
 	github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230622072915-01acb8d2506e
 	github.com/onsi/ginkgo/v2 v2.11.0
