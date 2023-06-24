@@ -22,7 +22,7 @@ require (
 	github.com/otiai10/openaigo v1.2.0
 	github.com/rs/zerolog v1.29.1
 	github.com/sashabaranov/go-openai v1.11.3
-	github.com/tmc/langchaingo v0.0.0-20230616220619-1b3da4433944
+	github.com/tmc/langchaingo v0.0.0-20230624064904-ac5c5197a552
 	github.com/urfave/cli/v2 v2.25.7
 	github.com/valyala/fasthttp v1.48.0
 	gopkg.in/yaml.v2 v2.4.0
