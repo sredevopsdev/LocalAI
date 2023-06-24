@@ -101,8 +101,6 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
             BUILD_TYPE=${{ matrix.build-type }}
-            CUDA_MAJOR_VERSION=${{ matrix.cuda-major-version }}
-            CUDA_MINOR_VERSION=${{ matrix.cuda-minor-version }}
             FFMPEG=${{ matrix.ffmpeg }}
           context: .
           file: ./Dockerfile
