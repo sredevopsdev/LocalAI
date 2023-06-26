@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/donomii/go-rwkv.cpp v0.0.0-20230619005719-f5a8c4539674
-	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230606002726-57543c169e27
+	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230625205101-72deb41eb263
 	github.com/go-audio/wav v1.1.0
 	github.com/go-skynet/LocalAI v1.19.2
 	github.com/go-skynet/bloomz.cpp v0.0.0-20230529155654-1834e77b83fa
@@ -21,17 +21,18 @@ require (
 	github.com/onsi/gomega v1.27.8
 	github.com/otiai10/openaigo v1.2.0
 	github.com/rs/zerolog v1.29.1
-	github.com/sashabaranov/go-openai v1.11.3
-	github.com/tmc/langchaingo v0.0.0-20230624064904-ac5c5197a552
+	github.com/sashabaranov/go-openai v1.12.0
+	github.com/tmc/langchaingo v0.0.0-20230625234550-7ea734523e39
 	github.com/urfave/cli/v2 v2.25.7
 	github.com/valyala/fasthttp v1.48.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
+	github.com/dlclark/regexp2 v1.8.1 // indirect
 	github.com/go-audio/audio v1.0.0 // indirect
 	github.com/go-audio/riff v1.0.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
@@ -46,6 +47,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/pkoukk/tiktoken-go v0.1.2 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
