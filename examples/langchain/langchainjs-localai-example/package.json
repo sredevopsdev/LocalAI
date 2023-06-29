@@ -15,7 +15,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "langchain": "^0.0.91",
+    "langchain": "^0.0.92",
     "typeorm": "^0.3.15"
   }
 }
