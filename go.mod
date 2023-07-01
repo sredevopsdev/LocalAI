@@ -1,6 +1,6 @@
 module github.com/sredevopsdev/LocalAI
 
-go 1.19
+go 1.20
 
 require (
 	github.com/donomii/go-rwkv.cpp v0.0.0-20230619005719-f5a8c4539674

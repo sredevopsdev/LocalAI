@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 
+	"github.com/go-skynet/LocalAI/internal"
 	"github.com/go-skynet/LocalAI/pkg/assets"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -80,13 +81,13 @@ func App(opts ...AppOption) (*fiber.App, error) {
 	app.Use(recover.New())
 
 	if options.preloadJSONModels != "" {
-		if err := ApplyGalleryFromString(options.loader.ModelPath, options.preloadJSONModels, cm); err != nil {
+		if err := ApplyGalleryFromString(options.loader.ModelPath, options.preloadJSONModels, cm, options.galleries); err != nil {
 			return nil, err
 		}
 	}
 
 	if options.preloadModelsFromPath != "" {
-		if err := ApplyGalleryFromFile(options.loader.ModelPath, options.preloadModelsFromPath, cm); err != nil {
+		if err := ApplyGalleryFromFile(options.loader.ModelPath, options.preloadModelsFromPath, cm, options.galleries); err != nil {
 			return nil, err
 		}
 	}
@@ -104,7 +105,15 @@ func App(opts ...AppOption) (*fiber.App, error) {
 	// LocalAI API endpoints
 	applier := newGalleryApplier(options.loader.ModelPath)
 	applier.start(options.context, cm)
-	app.Post("/models/apply", applyModelGallery(options.loader.ModelPath, cm, applier.C))
+
+	app.Get("/version", func(c *fiber.Ctx) error {
+		return c.JSON(struct {
+			Version string `json:"version"`
+		}{Version: internal.PrintableVersion()})
+	})
+
+	app.Post("/models/apply", applyModelGallery(options.loader.ModelPath, cm, applier.C, options.galleries))
+	app.Get("/models/available", listModelFromGallery(options.galleries, options.loader.ModelPath))
 	app.Get("/models/jobs/:uuid", getOpStatus(applier))
 
 	// openAI compatible API endpoint
@@ -120,6 +129,7 @@ func App(opts ...AppOption) (*fiber.App, error) {
 	// completion
 	app.Post("/v1/completions", completionEndpoint(cm, options))
 	app.Post("/completions", completionEndpoint(cm, options))
+	app.Post("/v1/engines/:model/completions", completionEndpoint(cm, options))
 
 	// embeddings
 	app.Post("/v1/embeddings", embeddingsEndpoint(cm, options))
@@ -128,12 +138,17 @@ func App(opts ...AppOption) (*fiber.App, error) {
 
 	// audio
 	app.Post("/v1/audio/transcriptions", transcriptEndpoint(cm, options))
+	app.Post("/tts", ttsEndpoint(cm, options))
 
 	// images
 	app.Post("/v1/images/generations", imageEndpoint(cm, options))
 
 	if options.imageDir != "" {
 		app.Static("/generated-images", options.imageDir)
+	}
+
+	if options.audioDir != "" {
+		app.Static("/generated-audio", options.audioDir)
 	}
 
 	ok := func(c *fiber.Ctx) error {

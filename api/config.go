@@ -23,6 +23,7 @@ type Config struct {
 	TrimSpace      []string          `yaml:"trimspace"`
 	ContextSize    int               `yaml:"context_size"`
 	F16            bool              `yaml:"f16"`
+	NUMA           bool              `yaml:"numa"`
 	Threads        int               `yaml:"threads"`
 	Debug          bool              `yaml:"debug"`
 	Roles          map[string]string `yaml:"roles"`
@@ -35,6 +36,7 @@ type Config struct {
 	NGPULayers     int               `yaml:"gpu_layers"`
 	MMap           bool              `yaml:"mmap"`
 	MMlock         bool              `yaml:"mmlock"`
+	LowVRAM        bool              `yaml:"low_vram"`
 
 	TensorSplit           string `yaml:"tensor_split"`
 	MainGPU               string `yaml:"main_gpu"`
@@ -96,7 +98,7 @@ func ReadConfig(file string) (*Config, error) {
 	return c, nil
 }
 
-func (cm ConfigMerger) LoadConfigFile(file string) error {
+func (cm *ConfigMerger) LoadConfigFile(file string) error {
 	cm.Lock()
 	defer cm.Unlock()
 	c, err := ReadConfigFile(file)
@@ -110,7 +112,7 @@ func (cm ConfigMerger) LoadConfigFile(file string) error {
 	return nil
 }
 
-func (cm ConfigMerger) LoadConfig(file string) error {
+func (cm *ConfigMerger) LoadConfig(file string) error {
 	cm.Lock()
 	defer cm.Unlock()
 	c, err := ReadConfig(file)
@@ -122,14 +124,14 @@ func (cm ConfigMerger) LoadConfig(file string) error {
 	return nil
 }
 
-func (cm ConfigMerger) GetConfig(m string) (Config, bool) {
+func (cm *ConfigMerger) GetConfig(m string) (Config, bool) {
 	cm.Lock()
 	defer cm.Unlock()
 	v, exists := cm.configs[m]
 	return v, exists
 }
 
-func (cm ConfigMerger) ListConfigs() []string {
+func (cm *ConfigMerger) ListConfigs() []string {
 	cm.Lock()
 	defer cm.Unlock()
 	var res []string
@@ -139,7 +141,7 @@ func (cm ConfigMerger) ListConfigs() []string {
 	return res
 }
 
-func (cm ConfigMerger) LoadConfigs(path string) error {
+func (cm *ConfigMerger) LoadConfigs(path string) error {
 	cm.Lock()
 	defer cm.Unlock()
 	entries, err := os.ReadDir(path)
@@ -315,20 +317,32 @@ func readInput(c *fiber.Ctx, loader *model.ModelLoader, randomModel bool) (strin
 func readConfig(modelFile string, input *OpenAIRequest, cm *ConfigMerger, loader *model.ModelLoader, debug bool, threads, ctx int, f16 bool) (*Config, *OpenAIRequest, error) {
 	// Load a config file if present after the model name
 	modelConfig := filepath.Join(loader.ModelPath, modelFile+".yaml")
-	if _, err := os.Stat(modelConfig); err == nil {
-		if err := cm.LoadConfig(modelConfig); err != nil {
-			return nil, nil, fmt.Errorf("failed loading model config (%s) %s", modelConfig, err.Error())
-		}
-	}
 
 	var config *Config
-	cfg, exists := cm.GetConfig(modelFile)
-	if !exists {
+
+	defaults := func() {
 		config = defaultConfig(modelFile)
 		config.ContextSize = ctx
 		config.Threads = threads
 		config.F16 = f16
 		config.Debug = debug
+	}
+
+	cfg, exists := cm.GetConfig(modelFile)
+	if !exists {
+		if _, err := os.Stat(modelConfig); err == nil {
+			if err := cm.LoadConfig(modelConfig); err != nil {
+				return nil, nil, fmt.Errorf("failed loading model config (%s) %s", modelConfig, err.Error())
+			}
+			cfg, exists = cm.GetConfig(modelFile)
+			if exists {
+				config = &cfg
+			} else {
+				defaults()
+			}
+		} else {
+			defaults()
+		}
 	} else {
 		config = &cfg
 	}
