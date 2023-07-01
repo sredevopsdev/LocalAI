@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	api "github.com/go-skynet/LocalAI/api"
+	"github.com/go-skynet/LocalAI/internal"
+	"github.com/go-skynet/LocalAI/pkg/gallery"
 	model "github.com/go-skynet/LocalAI/pkg/model"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -22,8 +25,9 @@ func main() {
 	}
 
 	app := &cli.App{
-		Name:  "LocalAI",
-		Usage: "OpenAI compatible API for running LLaMA/GPT models locally on CPU with consumer grade hardware.",
+		Name:    "LocalAI",
+		Version: internal.PrintableVersion(),
+		Usage:   "OpenAI compatible API for running LLaMA/GPT models locally on CPU with consumer grade hardware.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "f16",
@@ -54,6 +58,11 @@ func main() {
 				Value:   filepath.Join(path, "models"),
 			},
 			&cli.StringFlag{
+				Name:    "galleries",
+				Usage:   "JSON list of galleries",
+				EnvVars: []string{"GALLERIES"},
+			},
+			&cli.StringFlag{
 				Name:    "preload-models",
 				Usage:   "A List of models to apply in JSON at start",
 				EnvVars: []string{"PRELOAD_MODELS"},
@@ -78,7 +87,13 @@ func main() {
 				Name:    "image-path",
 				Usage:   "Image directory",
 				EnvVars: []string{"IMAGE_PATH"},
-				Value:   "",
+				Value:   "/tmp/generated/images",
+			},
+			&cli.StringFlag{
+				Name:    "audio-path",
+				Usage:   "audio directory",
+				EnvVars: []string{"AUDIO_PATH"},
+				Value:   "/tmp/generated/audio",
 			},
 			&cli.StringFlag{
 				Name:    "backend-assets-path",
@@ -117,14 +132,20 @@ It uses llama.cpp, ggml and gpt4all as backend with golang c bindings.
 		Copyright: "go-skynet authors",
 		Action: func(ctx *cli.Context) error {
 			fmt.Printf("Starting LocalAI using %d threads, with models path: %s\n", ctx.Int("threads"), ctx.String("models-path"))
+			galls := ctx.String("galleries")
+			var galleries []gallery.Gallery
+			err := json.Unmarshal([]byte(galls), &galleries)
+			fmt.Println(err)
 			app, err := api.App(
 				api.WithConfigFile(ctx.String("config-file")),
+				api.WithGalleries(galleries),
 				api.WithJSONStringPreload(ctx.String("preload-models")),
 				api.WithYAMLConfigPreload(ctx.String("preload-models-config")),
 				api.WithModelLoader(model.NewModelLoader(ctx.String("models-path"))),
 				api.WithContextSize(ctx.Int("context-size")),
 				api.WithDebug(ctx.Bool("debug")),
 				api.WithImageDir(ctx.String("image-path")),
+				api.WithAudioDir(ctx.String("audio-path")),
 				api.WithF16(ctx.Bool("f16")),
 				api.WithDisableMessage(false),
 				api.WithCors(ctx.Bool("cors")),

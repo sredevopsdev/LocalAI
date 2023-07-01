@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 
+	"github.com/go-skynet/LocalAI/pkg/gallery"
 	model "github.com/go-skynet/LocalAI/pkg/model"
 )
 
@@ -15,10 +16,13 @@ type Option struct {
 	f16                             bool
 	debug, disableMessage           bool
 	imageDir                        string
+	audioDir                        string
 	cors                            bool
 	preloadJSONModels               string
 	preloadModelsFromPath           string
 	corsAllowOrigins                string
+
+	galleries []gallery.Gallery
 
 	backendAssets     embed.FS
 	assetsDestination string
@@ -62,6 +66,12 @@ func WithBackendAssetsOutput(out string) AppOption {
 func WithBackendAssets(f embed.FS) AppOption {
 	return func(o *Option) {
 		o.backendAssets = f
+	}
+}
+
+func WithGalleries(galleries []gallery.Gallery) AppOption {
+	return func(o *Option) {
+		o.galleries = append(o.galleries, galleries...)
 	}
 }
 
@@ -127,6 +137,12 @@ func WithDebug(debug bool) AppOption {
 func WithDisableMessage(disableMessage bool) AppOption {
 	return func(o *Option) {
 		o.disableMessage = disableMessage
+	}
+}
+
+func WithAudioDir(audioDir string) AppOption {
+	return func(o *Option) {
+		o.audioDir = audioDir
 	}
 }
 

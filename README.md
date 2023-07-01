@@ -9,30 +9,43 @@
 
 [![](https://dcbadge.vercel.app/api/server/uJAeKSAGDy?style=flat-square&theme=default-inverted)](https://discord.gg/uJAeKSAGDy) 
 
-**LocalAI** is a drop-in replacement REST API that’s compatible with OpenAI API specifications for local inferencing. It allows you to run LLMs (and not only) locally or on-prem with consumer grade hardware, supporting multiple model families that are compatible with the ggml format. Does not require GPU.
+[Documentation website](https://localai.io/)
+
+**LocalAI** is a drop-in replacement REST API that's compatible with OpenAI API specifications for local inferencing. It allows you to run LLMs (and not only) locally or on-prem with consumer grade hardware, supporting multiple model families that are compatible with the ggml format. Does not require GPU.
 
 For a list of the supported model families, please see [the model compatibility table](https://localai.io/model-compatibility/index.html#model-compatibility-table).
 
 In a nutshell:
 
 - Local, OpenAI drop-in alternative REST API. You own your data.
-- NO GPU required. NO Internet access is required either. Optional, GPU Acceleration is available in `llama.cpp`-compatible LLMs. [See building instructions](https://localai.io/basics/build/index.html).
-- Supports multiple models, Audio transcription, Text generation with GPTs, Image generation with stable diffusion (experimental)
-- Once loaded the first time, it keep models loaded in memory for faster inference
-- Doesn't shell-out, but uses C++ bindings for a faster inference and better performance. 
+- NO GPU required. NO Internet access is required either
+  - Optional, GPU Acceleration is available in `llama.cpp`-compatible LLMs. See also the [build section](https://localai.io/basics/build/index.html). 
+- Supports multiple models:
+  - 📖 Text generation with GPTs (`llama.cpp`, `gpt4all.cpp`, ... and more)
+  - 🗣 Text to Audio 🎺🆕
+  - 🔈 Audio to Text (Audio transcription with `whisper.cpp`)
+  - 🎨 Image generation with stable diffusion
+- 🏃 Once loaded the first time, it keep models loaded in memory for faster inference
+- ⚡ Doesn't shell-out, but uses C++ bindings for a faster inference and better performance. 
 
-LocalAI was created by [Ettore Di Giacinto](https://github.com/mudler/) and is a community-driven project, focused on making the AI accessible to anyone. Any contribution, feedback and PR is welcome!
+LocalAI was created by [Ettore Di Giacinto](https://github.com/mudler/) and is a community-driven project, focused on making the AI accessible to anyone. Any contribution, feedback and PR is welcome! 
+
+See the [Getting started](https://localai.io/basics/getting_started/index.html) and [examples](https://github.com/go-skynet/LocalAI/tree/master/examples/) sections to learn how to use LocalAI. For a list of curated models check out the [model gallery](https://localai.io/models/).
+
 
 | [ChatGPT OSS alternative](https://github.com/go-skynet/LocalAI/tree/master/examples/chatbot-ui)                                                                                                                | [Image generation](https://localai.io/api-endpoints/index.html#image-generation)                                                                                                              |
 |------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 |  ![Screenshot from 2023-04-26 23-59-55](https://user-images.githubusercontent.com/2420543/234715439-98d12e03-d3ce-4f94-ab54-2b256808e05e.png)            | ![b6441997879](https://github.com/go-skynet/LocalAI/assets/2420543/d50af51c-51b7-4f39-b6c2-bf04c403894c)                  |
 
-
-See the [Getting started](https://localai.io/basics/getting_started/index.html) and [examples](https://github.com/go-skynet/LocalAI/tree/master/examples/) sections to learn how to use LocalAI. For a list of curated models check out the [model gallery](https://localai.io/models/).
+|                                                                    [Telegram bot](https://github.com/go-skynet/LocalAI/tree/master/examples/telegram-bot)   | [Flowise](https://github.com/go-skynet/LocalAI/tree/master/examples/flowise)                                                                                                                     |
+|------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+![Screenshot from 2023-06-09 00-36-26](https://github.com/go-skynet/LocalAI/assets/2420543/e98b4305-fa2d-41cf-9d2f-1bb2d75ca902)   |  ![Screenshot from 2023-05-30 18-01-03](https://github.com/go-skynet/LocalAI/assets/2420543/02458782-0549-4131-971c-95ee56ec1af8)|    |
 
 ## News
 
-- 🔥🔥🔥 06-06-2023: **v1.18.0**: Many updates, new features, and much more 🚀, check out the [Changelog](https://localai.io/basics/news/index.html#-06-06-2023-__v1180__-)!
+- 🔥🔥🔥 28-06-2023: **v1.20.0**: Added text to audio and gallery huggingface repositories! [Release notes](https://localai.io/basics/news/index.html#-28-06-2023-__v1200__-) [Changelog](https://github.com/go-skynet/LocalAI/releases/tag/v1.20.0)
+- 🔥🔥🔥 19-06-2023: **v1.19.0**: CUDA support! [Release notes](https://localai.io/basics/news/index.html#-19-06-2023-__v1190__-) [Changelog](https://github.com/go-skynet/LocalAI/releases/tag/v1.19.0)
+- 🔥🔥🔥 06-06-2023: **v1.18.0**: Many updates, new features, and much more 🚀, check out the [Release notes](https://localai.io/basics/news/index.html#-06-06-2023-__v1180__-)!
 - 29-05-2023: LocalAI now has a website, [https://localai.io](https://localai.io)! check the news in the [dedicated section](https://localai.io/basics/news/index.html)!
 
 For latest news, follow also on Twitter [@LocalAI_API](https://twitter.com/LocalAI_API) and [@mudler_it](https://twitter.com/mudler_it)
@@ -40,8 +53,6 @@ For latest news, follow also on Twitter [@LocalAI_API](https://twitter.com/Local
 ## Contribute and help
 
 To help the project you can:
-
-- Upvote the [Reddit post](https://www.reddit.com/r/selfhosted/comments/12w4p2f/localai_openai_compatible_api_to_run_llm_models/) about LocalAI.
 
 - [Hacker news post](https://news.ycombinator.com/item?id=35726934) - help us out by voting if you like this project.
 
@@ -175,15 +186,19 @@ Feel free to open up a PR to get your project listed!
 ## Short-term roadmap
 
 - [x] Mimic OpenAI API (https://github.com/go-skynet/LocalAI/issues/10)
-- [ ] Binary releases (https://github.com/go-skynet/LocalAI/issues/6)
-- [ ] Upstream our golang bindings to llama.cpp (https://github.com/ggerganov/llama.cpp/issues/351) and [gpt4all](https://github.com/go-skynet/LocalAI/issues/85)
+- [x] Binary releases (https://github.com/go-skynet/LocalAI/issues/6)
+- [ ] Upstream our golang bindings to llama.cpp (https://github.com/ggerganov/llama.cpp/issues/351) 
+- [x] Upstream [gpt4all](https://github.com/go-skynet/LocalAI/issues/85) bindings
 - [x] Multi-model support
 - [x] Have a webUI!
 - [x] Allow configuration of defaults for models.
 - [x] Support for embeddings
 - [x] Support for audio transcription with https://github.com/ggerganov/whisper.cpp
-- [ ] GPU/CUDA support ( https://github.com/go-skynet/LocalAI/issues/69 )
-- [ ] Enable automatic downloading of models from a curated gallery, with only free-licensed models, directly from the webui.
+- [x] GPU/CUDA support ( https://github.com/go-skynet/LocalAI/issues/69 )
+- [X] Enable automatic downloading of models from a curated gallery
+- [ ] Enable automatic downloading of models from HuggingFace
+- [ ] Enable gallery management directly from the webui.
+- [ ] 🔥 OpenAI functions: https://github.com/go-skynet/LocalAI/issues/588
 
 ## Star history
 

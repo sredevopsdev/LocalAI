@@ -5,8 +5,13 @@ FROM golang:$GO_VERSION as requirements
 ARG BUILD_TYPE
 ARG CUDA_MAJOR_VERSION=11
 ARG CUDA_MINOR_VERSION=7
+ARG SPDLOG_VERSION="1.11.0"
+ARG PIPER_PHONEMIZE_VERSION='1.0.0'
+ARG TARGETARCH
+ARG TARGETVARIANT
 
 ENV BUILD_TYPE=${BUILD_TYPE}
+ARG GO_TAGS="stablediffusion tts"
 
 RUN apt-get update && \
     apt-get install -y ca-certificates cmake curl patch
@@ -23,6 +28,8 @@ RUN if [ "${BUILD_TYPE}" = "cublas" ]; then \
     ; fi
 ENV PATH /usr/local/cuda/bin:${PATH}
 
+WORKDIR /build
+
 # OpenBLAS requirements
 RUN apt-get install -y libopenblas-dev
 
@@ -30,9 +37,39 @@ RUN apt-get install -y libopenblas-dev
 RUN apt-get install -y libopencv-dev && \
     ln -s /usr/include/opencv4/opencv2 /usr/include/opencv2
 
+# Use the variables in subsequent instructions
+RUN echo "Target Architecture: $TARGETARCH"
+RUN echo "Target Variant: $TARGETVARIANT"
+
+# piper requirements
+# Use pre-compiled Piper phonemization library (includes onnxruntime)
+#RUN if echo "${GO_TAGS}" | grep -q "tts"; then \
+RUN test -n "$TARGETARCH" \
+    || (echo 'warn: missing $TARGETARCH, either set this `ARG` manually, or run using `docker buildkit`')
+
+RUN curl -L "https://github.com/gabime/spdlog/archive/refs/tags/v${SPDLOG_VERSION}.tar.gz" | \
+    tar -xzvf - && \
+    mkdir -p "spdlog-${SPDLOG_VERSION}/build" && \
+    cd "spdlog-${SPDLOG_VERSION}/build" && \
+    cmake ..  && \
+    make -j8 && \
+    cmake --install . --prefix /usr && mkdir -p "lib/Linux-$(uname -m)" && \
+    cd /build && \
+    mkdir -p "lib/Linux-$(uname -m)/piper_phonemize" && \
+    curl -L "https://github.com/rhasspy/piper-phonemize/releases/download/v${PIPER_PHONEMIZE_VERSION}/libpiper_phonemize-${TARGETARCH:-$(go env GOARCH)}${TARGETVARIANT}.tar.gz" | \
+    tar -C "lib/Linux-$(uname -m)/piper_phonemize" -xzvf - && ls -liah /build/lib/Linux-$(uname -m)/piper_phonemize/ && \
+    cp -rfv /build/lib/Linux-$(uname -m)/piper_phonemize/lib/. /lib64/ && \
+    cp -rfv /build/lib/Linux-$(uname -m)/piper_phonemize/lib/. /usr/lib/ && \
+    cp -rfv /build/lib/Linux-$(uname -m)/piper_phonemize/include/. /usr/include/
+# \
+#    ; fi
+
+###################################
+###################################
+
 FROM requirements as builder
 
-ARG GO_TAGS=stablediffusion
+ARG GO_TAGS="stablediffusion tts"
 
 ENV GO_TAGS=${GO_TAGS}
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
@@ -41,8 +78,15 @@ ENV NVIDIA_VISIBLE_DEVICES=all
 
 WORKDIR /build
 
+COPY Makefile .
+RUN make get-sources
+COPY go.mod .
+RUN make prepare
 COPY . .
-RUN make build
+RUN ESPEAK_DATA=/build/lib/Linux-$(uname -m)/piper_phonemize/lib/espeak-ng-data make build
+
+###################################
+###################################
 
 FROM requirements
 
@@ -58,6 +102,10 @@ RUN if [ "${FFMPEG}" = "true" ]; then \
 
 WORKDIR /build
 
+# we start fresh & re-copy all assets because `make build` does not clean up nicely after itself
+# so when `entrypoint.sh` runs `make build` again (which it does by default), the build would fail
+# see https://github.com/go-skynet/LocalAI/pull/658#discussion_r1241971626 and
+# https://github.com/go-skynet/LocalAI/pull/434
 COPY . .
 RUN make prepare-sources
 COPY --from=builder /build/local-ai ./

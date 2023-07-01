@@ -1,10 +1,10 @@
 module github.com/sredevopsdev/LocalAI
 
-go 1.19
+go 1.20
 
 require (
 	github.com/donomii/go-rwkv.cpp v0.0.0-20230619005719-f5a8c4539674
-	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230606002726-57543c169e27
+	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230628193450-85ed71aaec8e
 	github.com/go-audio/wav v1.1.0
 	github.com/go-skynet/LocalAI v1.19.2
 	github.com/go-skynet/bloomz.cpp v0.0.0-20230529155654-1834e77b83fa
@@ -14,12 +14,14 @@ require (
 	github.com/gofiber/fiber/v2 v2.47.0
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/imdario/mergo v0.3.16
+	github.com/imdario/mergo v1.0.0
+	github.com/json-iterator/go v1.1.12
+	github.com/mholt/archiver/v3 v3.5.1
 	github.com/mudler/go-stable-diffusion v0.0.0-20230605122230-d89260f598af
 	github.com/nomic-ai/gpt4all/gpt4all-bindings/golang v0.0.0-20230623202852-3417a37c5472
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
-	github.com/otiai10/openaigo v1.2.0
+	github.com/otiai10/openaigo v1.4.0
 	github.com/rs/zerolog v1.29.1
 	github.com/sashabaranov/go-openai v1.11.3
 	github.com/tmc/langchaingo v0.0.0-20230624064904-ac5c5197a552
