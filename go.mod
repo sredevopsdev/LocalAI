@@ -7,7 +7,7 @@ require (
 	github.com/ggerganov/whisper.cpp/bindings/go v0.0.0-20230704172827-4774d2feb01a
 	github.com/go-audio/wav v1.1.0
 	github.com/go-skynet/bloomz.cpp v0.0.0-20230529155654-1834e77b83fa
-	github.com/go-skynet/go-bert.cpp v0.0.0-20230607105116-6069103f54b9
+	github.com/go-skynet/go-bert.cpp v0.0.0-20230716133540-6abe312cded1
 	github.com/go-skynet/go-ggml-transformers.cpp v0.0.0-20230714203132-ffb09d7dd71e
 	github.com/go-skynet/go-llama.cpp v0.0.0-20230709163512-6c97625cca76
 	github.com/gofiber/fiber/v2 v2.47.0
@@ -27,7 +27,7 @@ require (
 	github.com/tmc/langchaingo v0.0.0-20230713201705-dcf7ecdc8ac8
 	github.com/urfave/cli/v2 v2.25.7
 	github.com/valyala/fasthttp v1.48.0
-	gopkg.in/yaml.v3 v3.0.1
+	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
