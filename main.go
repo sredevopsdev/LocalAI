@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	api "github.com/go-skynet/LocalAI/api"
+	"github.com/go-skynet/LocalAI/api/options"
+	"github.com/go-skynet/LocalAI/internal"
 	model "github.com/go-skynet/LocalAI/pkg/model"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -14,6 +17,13 @@ import (
 
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	// clean up process
+	go func() {
+		c := make(chan os.Signal, 1) // we need to reserve to buffer size 1, so the notifier are not blocked
+		signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+		<-c
+		os.Exit(1)
+	}()
 
 	path, err := os.Getwd()
 	if err != nil {
@@ -22,8 +32,9 @@ func main() {
 	}
 
 	app := &cli.App{
-		Name:  "LocalAI",
-		Usage: "OpenAI compatible API for running LLaMA/GPT models locally on CPU with consumer grade hardware.",
+		Name:    "LocalAI",
+		Version: internal.PrintableVersion(),
+		Usage:   "OpenAI compatible API for running LLaMA/GPT models locally on CPU with consumer grade hardware.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:    "f16",
@@ -54,6 +65,11 @@ func main() {
 				Value:   filepath.Join(path, "models"),
 			},
 			&cli.StringFlag{
+				Name:    "galleries",
+				Usage:   "JSON list of galleries",
+				EnvVars: []string{"GALLERIES"},
+			},
+			&cli.StringFlag{
 				Name:    "preload-models",
 				Usage:   "A List of models to apply in JSON at start",
 				EnvVars: []string{"PRELOAD_MODELS"},
@@ -78,7 +94,13 @@ func main() {
 				Name:    "image-path",
 				Usage:   "Image directory",
 				EnvVars: []string{"IMAGE_PATH"},
-				Value:   "",
+				Value:   "/tmp/generated/images",
+			},
+			&cli.StringFlag{
+				Name:    "audio-path",
+				Usage:   "audio directory",
+				EnvVars: []string{"AUDIO_PATH"},
+				Value:   "/tmp/generated/audio",
 			},
 			&cli.StringFlag{
 				Name:    "backend-assets-path",
@@ -111,28 +133,29 @@ Some of the models compatible are:
 - Alpaca
 - StableLM (ggml quantized)
 
-It uses llama.cpp, ggml and gpt4all as backend with golang c bindings.
+For a list of compatible model, check out: https://localai.io/model-compatibility/index.html
 `,
 		UsageText: `local-ai [options]`,
-		Copyright: "go-skynet authors",
+		Copyright: "Ettore Di Giacinto",
 		Action: func(ctx *cli.Context) error {
-			fmt.Printf("Starting LocalAI using %d threads, with models path: %s\n", ctx.Int("threads"), ctx.String("models-path"))
 			app, err := api.App(
-				api.WithConfigFile(ctx.String("config-file")),
-				api.WithJSONStringPreload(ctx.String("preload-models")),
-				api.WithYAMLConfigPreload(ctx.String("preload-models-config")),
-				api.WithModelLoader(model.NewModelLoader(ctx.String("models-path"))),
-				api.WithContextSize(ctx.Int("context-size")),
-				api.WithDebug(ctx.Bool("debug")),
-				api.WithImageDir(ctx.String("image-path")),
-				api.WithF16(ctx.Bool("f16")),
-				api.WithDisableMessage(false),
-				api.WithCors(ctx.Bool("cors")),
-				api.WithCorsAllowOrigins(ctx.String("cors-allow-origins")),
-				api.WithThreads(ctx.Int("threads")),
-				api.WithBackendAssets(backendAssets),
-				api.WithBackendAssetsOutput(ctx.String("backend-assets-path")),
-				api.WithUploadLimitMB(ctx.Int("upload-limit")))
+				options.WithConfigFile(ctx.String("config-file")),
+				options.WithJSONStringPreload(ctx.String("preload-models")),
+				options.WithYAMLConfigPreload(ctx.String("preload-models-config")),
+				options.WithModelLoader(model.NewModelLoader(ctx.String("models-path"))),
+				options.WithContextSize(ctx.Int("context-size")),
+				options.WithDebug(ctx.Bool("debug")),
+				options.WithImageDir(ctx.String("image-path")),
+				options.WithAudioDir(ctx.String("audio-path")),
+				options.WithF16(ctx.Bool("f16")),
+				options.WithStringGalleries(ctx.String("galleries")),
+				options.WithDisableMessage(false),
+				options.WithCors(ctx.Bool("cors")),
+				options.WithCorsAllowOrigins(ctx.String("cors-allow-origins")),
+				options.WithThreads(ctx.Int("threads")),
+				options.WithBackendAssets(backendAssets),
+				options.WithBackendAssetsOutput(ctx.String("backend-assets-path")),
+				options.WithUploadLimitMB(ctx.Int("upload-limit")))
 			if err != nil {
 				return err
 			}
